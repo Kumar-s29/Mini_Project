@@ -275,9 +275,9 @@ def conversion(request):
             measurement_form = ConversionLengthForm()
             context = {"form": form, "m_form": measurement_form, "input": True}
             if "input" in request.POST:
-                first = request.POST.get("measure1")
-                second = request.POST.get("measure2")
-                input = request.POST.get("input")
+                first = request.POST["measure1"]
+                second = request.POST["measure2"]
+                input = request.POST["input"]
                 answer = ""
                 if input and int(input) >= 0:
                     if first == "yard" and second == "foot":
@@ -294,9 +294,9 @@ def conversion(request):
             measurement_form = ConversionMassForm()
             context = {"form": form, "m_form": measurement_form, "input": True}
             if "input" in request.POST:
-                first = request.POST.get("measure1")
-                second = request.POST.get("measure2")
-                input = request.POST.get("input")
+                first = request.POST["measure1"]
+                second = request.POST["measure2"]
+                input = request.POST["input"]
                 answer = ""
                 if input and int(input) >= 0:
                     if first == "pound" and second == "kilogram":

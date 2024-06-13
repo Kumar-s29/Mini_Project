@@ -27,14 +27,14 @@
     <header>
       <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
         <div class="container-fluid">
-          <a class="navbar-brand" href="{% url 'home'%}"
-            >Student Learning Hub</a
-          >
+          <a class="navbar-brand" href="{% url 'home' %}">
+            Student Learning Hub
+          </a>
           <button
             class="navbar-toggler"
             type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#navbarSupportedContent"
+            data-toggle="collapse"
+            data-target="#navbarSupportedContent"
             aria-controls="navbarSupportedContent"
             aria-expanded="false"
             aria-label="Toggle navigation"
@@ -51,10 +51,11 @@
                   class="nav-link active"
                   aria-current="page"
                   href="{% url 'home' %}"
-                  >Home</a
                 >
+                  Home
+                </a>
               </li>
-              {% comment %} {% if user.is_authenticated %} {% endcomment %}
+              {% if user.is_authenticated %}
               <li class="nav-item">
                 <a class="nav-link" href="{% url 'profile' %}">Profile</a>
               </li>
@@ -74,38 +75,35 @@
                   <a class="dropdown-item" href="{% url 'books' %}">Books</a>
                   <a class="dropdown-item" href="{% url 'wiki' %}">Wikipedia</a>
                   <div class="dropdown-divider"></div>
-
-                  <a class="dropdown-item" href="{% url 'dictionary' %}"
-                    >Dictionary</a
-                  >
-                  <a class="dropdown-item" href="{% url 'youtube' %}"
-                    >Youtube</a
-                  >
+                  <a class="dropdown-item" href="{% url 'dictionary' %}">
+                    Dictionary
+                  </a>
+                  <a class="dropdown-item" href="{% url 'youtube' %}">
+                    Youtube
+                  </a>
                   <div class="dropdown-divider"></div>
                   <a class="dropdown-item" href="{% url 'todo' %}">To-do</a>
-                  <a class="dropdown-item" href="{% url 'homework' %}"
-                    >Homework</a
-                  >
+                  <a class="dropdown-item" href="{% url 'homework' %}">
+                    Homework
+                  </a>
                   <div class="dropdown-divider"></div>
                   <a class="dropdown-item" href="{% url 'notes' %}">Notes</a>
-                  <a class="dropdown-item" href="{% url 'conversion' %}"
-                    >Conversion</a
-                  >
-                  <div class="dropdown-divider"></div>
+                  <a class="dropdown-item" href="{% url 'conversion' %}">
+                    Conversion
+                  </a>
                 </div>
               </li>
-
               <li class="nav-item">
                 <a class="nav-link" href="{% url 'logout' %}">Logout</a>
               </li>
-              {% comment %} {% else%} {% endcomment %}
+              {% else %}
               <li class="nav-item">
                 <a class="nav-link" href="{% url 'register' %}">Register</a>
               </li>
               <li class="nav-item">
                 <a class="nav-link" href="{% url 'login' %}">Login</a>
               </li>
-              {% comment %} {% endif%} {% endcomment %}
+              {% endif %}
             </ul>
           </div>
         </div>
@@ -114,8 +112,8 @@
     <br /><br />
     <main>
       {% if messages %} {% for msg in messages %}
-      <div class="alert alert" -{{msg.tags}}>{{msg}}</div>
-      {% endfor %} {% endif %} {% block content %} {% endblock content %}
+      <div class="alert alert-{{ msg.tags }}">{{ msg }}</div>
+      {% endfor %} {% endif %} {% block content %}{% endblock %}
     </main>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script
