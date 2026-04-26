@@ -1,0 +1,108 @@
+{% extends 'dashboard/base.html' %} 
+{% block content %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+  .analytics-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 60px 20px;
+  }
+  .chart-card {
+    background: rgba(255, 255, 255, 0.02);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--glass-border);
+    border-radius: 24px;
+    padding: 30px;
+    margin-bottom: 30px;
+    height: 100%;
+  }
+</style>
+
+<div class="analytics-container">
+  <div class="text-center mb-5">
+    <h1 class="display-4 fw-bold text-white">📊 Learning Analytics</h1>
+    <p class="text-secondary">Visualize your academic progress and productivity</p>
+  </div>
+
+  <div class="row g-4">
+    <div class="col-md-6">
+      <div class="chart-card">
+        <h4 class="text-white mb-4">Homework Completion</h4>
+        <canvas id="hwChart"></canvas>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="chart-card">
+        <h4 class="text-white mb-4">Task Completion (To-Do)</h4>
+        <canvas id="todoChart"></canvas>
+      </div>
+    </div>
+    <div class="col-md-12">
+      <div class="chart-card">
+        <h4 class="text-white mb-4">Academic Performance (Subject Percentages)</h4>
+        <canvas id="gradeChart"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Homework Chart
+  new Chart(document.getElementById('hwChart'), {
+    type: 'doughnut',
+    data: {
+      labels: ['Finished', 'Pending'],
+      datasets: [{
+        data: [{{ hw_done }}, {{ hw_pending }}],
+        backgroundColor: ['#10b981', 'rgba(255,255,255,0.05)'],
+        borderColor: 'rgba(255,255,255,0.1)',
+        borderWidth: 2
+      }]
+    },
+    options: {
+      plugins: { legend: { labels: { color: 'white' } } }
+    }
+  });
+
+  // Todo Chart
+  new Chart(document.getElementById('todoChart'), {
+    type: 'pie',
+    data: {
+      labels: ['Completed', 'Remaining'],
+      datasets: [{
+        data: [{{ todo_done }}, {{ todo_pending }}],
+        backgroundColor: ['#6366f1', 'rgba(255,255,255,0.05)'],
+        borderColor: 'rgba(255,255,255,0.1)',
+        borderWidth: 2
+      }]
+    },
+    options: {
+      plugins: { legend: { labels: { color: 'white' } } }
+    }
+  });
+
+  // Grade Chart
+  new Chart(document.getElementById('gradeChart'), {
+    type: 'bar',
+    data: {
+      labels: {{ grade_labels|safe }},
+      datasets: [{
+        label: 'Percentage Score',
+        data: {{ grade_values|safe }},
+        backgroundColor: 'rgba(99, 102, 241, 0.5)',
+        borderColor: '#6366f1',
+        borderWidth: 2,
+        borderRadius: 8
+      }]
+    },
+    options: {
+      scales: {
+        y: { beginAtZero: true, max: 100, ticks: { color: 'white' }, grid: { color: 'rgba(255,255,255,0.1)' } },
+        x: { ticks: { color: 'white' }, grid: { display: false } }
+      },
+      plugins: { legend: { display: false } }
+    }
+  });
+</script>
+{% endblock %}

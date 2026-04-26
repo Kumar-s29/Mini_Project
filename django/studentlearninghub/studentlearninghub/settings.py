@@ -21,9 +21,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
+
 SECRET_KEY = "django-insecure-%23*y!_s&@@oov-j2@=mf)@p+jvih8t4y=r^4az4o+$5!39kx4"
 
 # SECURITY WARNING: don't run with debug turned on in production!
+
 DEBUG = True
 
 ALLOWED_HOSTS = []
@@ -39,8 +41,9 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "dashboard",
-    "crispy_forms",
-     
+    'crispy_forms',
+    'crispy_bootstrap4',
+    
     
 ]
 
@@ -134,4 +137,10 @@ STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
 LOGIN_REDIRECT_URL = "home"
 LOGIN_URL = "login"
+LOGOUT_REDIRECT_URL = "logout"
 CRISPY_TEMPLATE_PACK = "bootstrap4"
+
+# Session settings
+SESSION_COOKIE_AGE = 1209600  # 2 weeks
+SESSION_SAVE_EVERY_REQUEST = False
+SESSION_COOKIE_HTTPONLY = True

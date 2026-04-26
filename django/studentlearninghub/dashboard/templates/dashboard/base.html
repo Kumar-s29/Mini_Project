@@ -6,7 +6,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>Student-dashboard</title>
+    <title>Student Learning Hub</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <link
       rel="stylesheet"
@@ -20,15 +20,104 @@
       integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr"
       crossorigin="anonymous"
     />
-    <link rel="stylesheet" href="{% static 'css/main.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/main.css' %}?v=2.0" />
+    <style>
+      :root {
+        --primary-glow: conic-gradient(from 180deg at 50% 50%, #16abff33 0deg, #0885ff33 55deg, #54d6ff33 120deg, #0071ff33 160deg, transparent 360deg);
+        --secondary-glow: radial-gradient(rgba(255, 255, 255, 1), rgba(255, 255, 255, 0));
+        --glass-bg: rgba(255, 255, 255, 0.03);
+        --glass-border: rgba(255, 255, 255, 0.1);
+        --text-primary: #f8fafc;
+        --text-secondary: #94a3b8;
+        --accent-teal: #2dd4bf;
+      }
+      
+      body {
+        background-color: #020617;
+        background-image: 
+          radial-gradient(at 0% 0%, rgba(20, 184, 166, 0.15) 0px, transparent 50%),
+          radial-gradient(at 100% 100%, rgba(99, 102, 241, 0.15) 0px, transparent 50%);
+        color: var(--text-primary);
+        font-family: 'Outfit', 'Inter', system-ui, -apple-system, sans-serif;
+        min-height: 100vh;
+        overflow-x: hidden;
+      }
+
+      /* Navbar Glassmorphism */
+      .navbar-custom {
+        background: rgba(15, 23, 42, 0.7) !important;
+        backdrop-filter: blur(20px) saturate(180%);
+        -webkit-backdrop-filter: blur(20px) saturate(180%);
+        border-bottom: 1px solid var(--glass-border);
+        padding: 1rem 0;
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+      }
+
+      .navbar-custom .navbar-brand {
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: white !important;
+        background: linear-gradient(to right, #2dd4bf, #22d3ee);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        letter-spacing: -0.5px;
+      }
+
+      .navbar-custom .nav-link {
+        color: var(--text-secondary) !important;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        padding: 0.5rem 1rem !important;
+        border-radius: 12px;
+      }
+
+      .navbar-custom .nav-link:hover,
+      .navbar-custom .nav-link.active {
+        color: white !important;
+        background: var(--glass-bg);
+      }
+
+      .navbar-custom .dropdown-menu {
+        background: rgba(15, 23, 42, 0.9);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: 16px;
+        padding: 0.75rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      }
+
+      .navbar-custom .dropdown-item {
+        color: var(--text-secondary);
+        border-radius: 8px;
+        transition: all 0.2s ease;
+        padding: 0.6rem 1.2rem;
+      }
+
+      .navbar-custom .dropdown-item:hover {
+        background: var(--glass-bg);
+        color: white;
+        transform: translateX(4px);
+      }
+
+      .alert {
+        background: rgba(15, 23, 42, 0.6);
+        backdrop-filter: blur(10px);
+        border: 1px solid var(--glass-border);
+        color: white;
+        border-radius: 16px;
+        margin-top: 2rem;
+      }
+    </style>
   </head>
 
   <body>
     <header>
-      <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+      <nav class="navbar navbar-expand-lg navbar-dark navbar-custom">
         <div class="container-fluid">
           <a class="navbar-brand" href="{% url 'home' %}">
-            Student Learning Hub
+            <i class="fas fa-graduation-cap"></i> Student Learning Hub
           </a>
           <button
             class="navbar-toggler"
@@ -52,12 +141,14 @@
                   aria-current="page"
                   href="{% url 'home' %}"
                 >
-                  Home
+                  <i class="fas fa-home"></i> Home
                 </a>
               </li>
               {% if user.is_authenticated %}
               <li class="nav-item">
-                <a class="nav-link" href="{% url 'profile' %}">Profile</a>
+                <a class="nav-link" href="{% url 'profile' %}">
+                  <i class="fas fa-user"></i> Profile
+                </a>
               </li>
               <li class="nav-item dropdown">
                 <a
@@ -69,39 +160,78 @@
                   aria-haspopup="true"
                   aria-expanded="false"
                 >
-                  Options
+                  <i class="fas fa-th"></i> Options
                 </a>
                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                  <a class="dropdown-item" href="{% url 'books' %}">Books</a>
-                  <a class="dropdown-item" href="{% url 'wiki' %}">Wikipedia</a>
-                  <div class="dropdown-divider"></div>
-                  <a class="dropdown-item" href="{% url 'dictionary' %}">
-                    Dictionary
+                  <a class="dropdown-item" href="{% url 'notes' %}">
+                    <i class="fas fa-sticky-note"></i> Notes
                   </a>
-                  <a class="dropdown-item" href="{% url 'youtube' %}">
-                    Youtube
-                  </a>
-                  <div class="dropdown-divider"></div>
-                  <a class="dropdown-item" href="{% url 'todo' %}">To-do</a>
                   <a class="dropdown-item" href="{% url 'homework' %}">
-                    Homework
+                    <i class="fas fa-book-open"></i> Homework
+                  </a>
+                  <a class="dropdown-item" href="{% url 'todo' %}">
+                    <i class="fas fa-check-circle"></i> To-do
                   </a>
                   <div class="dropdown-divider"></div>
-                  <a class="dropdown-item" href="{% url 'notes' %}">Notes</a>
+                  <a class="dropdown-item" href="{% url 'grades' %}">
+                    <i class="fas fa-award"></i> Grade Tracker
+                  </a>
+                  <a class="dropdown-item" href="{% url 'exams' %}">
+                    <i class="fas fa-exclamation-triangle"></i> Exams
+                  </a>
+                  <a class="dropdown-item" href="{% url 'timetable' %}">
+                    <i class="fas fa-table"></i> Timetable
+                  </a>
+                  <a class="dropdown-item" href="{% url 'flashcards' %}">
+                    <i class="fas fa-clone"></i> Flashcards
+                  </a>
+                  <div class="dropdown-divider"></div>
+                  <a class="dropdown-item" href="{% url 'analytics' %}">
+                    <i class="fas fa-chart-bar"></i> Analytics
+                  </a>
+                  <a class="dropdown-item" href="{% url 'focus' %}">
+                    <i class="fas fa-stopwatch"></i> Deep Focus
+                  </a>
+                  <a class="dropdown-item" href="{% url 'whiteboard' %}">
+                    <i class="fas fa-paint-brush"></i> Whiteboard
+                  </a>
+                  <a class="dropdown-item" href="{% url 'ai-assistant' %}">
+                    <i class="fas fa-robot"></i> AI Assistant
+                  </a>
+                  <div class="dropdown-divider"></div>
+                  <a class="dropdown-item" href="{% url 'books' %}">
+                    <i class="fas fa-book"></i> Books
+                  </a>
+                  <a class="dropdown-item" href="{% url 'dictionary' %}">
+                    <i class="fas fa-spell-check"></i> Dictionary
+                  </a>
+                  <a class="dropdown-item" href="{% url 'wiki' %}">
+                    <i class="fab fa-wikipedia-w"></i> Wikipedia
+                  </a>
+                  <div class="dropdown-divider"></div>
+                  <a class="dropdown-item" href="{% url 'youtube' %}">
+                    <i class="fab fa-youtube"></i> Youtube
+                  </a>
                   <a class="dropdown-item" href="{% url 'conversion' %}">
-                    Conversion
+                    <i class="fas fa-exchange-alt"></i> Conversion
                   </a>
                 </div>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+                <a class="nav-link" href="{% url 'logout' %}">
+                  <i class="fas fa-sign-out-alt"></i> Logout
+                </a>
               </li>
               {% else %}
               <li class="nav-item">
-                <a class="nav-link" href="{% url 'register' %}">Register</a>
+                <a class="nav-link" href="{% url 'register' %}">
+                  <i class="fas fa-user-plus"></i> Register
+                </a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="{% url 'login' %}">Login</a>
+                <a class="nav-link" href="{% url 'login' %}">
+                  <i class="fas fa-sign-in-alt"></i> Login
+                </a>
               </li>
               {% endif %}
             </ul>
@@ -109,11 +239,33 @@
         </div>
       </nav>
     </header>
-    <br /><br />
+    <br />
     <main>
-      {% if messages %} {% for msg in messages %}
-      <div class="alert alert-{{ msg.tags }}">{{ msg }}</div>
-      {% endfor %} {% endif %} {% block content %}{% endblock %}
+      {% if request.path != '/' %}
+      <div class="container mb-4">
+        <a href="javascript:history.back()" class="btn btn-outline-light rounded-pill px-4 py-2 border-0" style="background: rgba(255,255,255,0.05); backdrop-filter: blur(10px);">
+          <i class="fas fa-arrow-left me-2"></i> Back
+        </a>
+      </div>
+      {% endif %}
+
+      {% if messages %} 
+      <div class="container">
+        {% for msg in messages %}
+        <div class="alert alert-{{ msg.tags|default:'info' }} alert-dismissible fade show" role="alert">
+          {% if 'safe' in msg.tags %}
+            {{ msg|safe }}
+          {% else %}
+            {{ msg }}
+          {% endif %}
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %} 
+      {% block content %}{% endblock %}
     </main>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script

@@ -1,141 +1,257 @@
 {% extends 'dashboard/base.html' %} {% load static %} {% block content %}
+<style>
+  .dashboard-wrapper {
+    display: grid;
+    grid-template-columns: 280px 1fr 320px;
+    gap: 30px;
+    max-width: 1600px;
+    margin: 30px auto;
+    padding: 0 20px;
+    min-height: calc(100vh - 120px);
+  }
 
-<section class="container text-center">
-  <h3>Welcome</h3>
+  /* Sidebar Styling */
+  .side-nav {
+    background: rgba(255, 255, 255, 0.02);
+    backdrop-filter: blur(15px);
+    border: 1px solid var(--glass-border);
+    border-radius: 30px;
+    padding: 30px 20px;
+    height: fit-content;
+    position: sticky;
+    top: 100px;
+  }
+  .nav-group { margin-bottom: 40px; }
+  .nav-group-title {
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 20px;
+    padding-left: 15px;
+  }
+  .nav-item-link {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 12px 15px;
+    color: var(--text-secondary);
+    text-decoration: none;
+    border-radius: 15px;
+    transition: all 0.3s ease;
+    margin-bottom: 5px;
+  }
+  .nav-item-link:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: white;
+    transform: translateX(5px);
+  }
+  .nav-item-link i { font-size: 1.1rem; width: 20px; text-align: center; }
+  .nav-item-link.active {
+    background: rgba(45, 212, 191, 0.1);
+    color: var(--accent-teal);
+    border-right: 3px solid var(--accent-teal);
+  }
 
-  <hr />
-  <br />
-  <div class="row">
-    <div class="col-md-3">
-      <a href="{% url 'notes'%}">
-        <div class="card">
-          <img
-            class="card-img-top"
-            src="{% static 'images/notes.jpg' %}"
-            alt="Notes image"
-          />
-          <div class="card-body">
-            <h5 class="card-title">Notes</h5>
-            Create Notes to refer them later. They are stored permanently until
-            deleted
-          </div>
-        </div>
-      </a>
+  /* Main Content Styling */
+  .main-dash { display: flex; flex-direction: column; gap: 30px; }
+  .welcome-banner {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(168, 85, 247, 0.1) 100%);
+    border: 1px solid rgba(99, 102, 241, 0.2);
+    border-radius: 35px;
+    padding: 50px;
+    position: relative;
+    overflow: hidden;
+  }
+  .welcome-banner h1 { font-size: 3rem; font-weight: 800; margin-bottom: 10px; }
+  
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+  .stat-widget {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--glass-border);
+    border-radius: 25px;
+    padding: 25px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+  .stat-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+  }
+
+  .tool-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 20px;
+  }
+  .tool-app-card {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--glass-border);
+    border-radius: 25px;
+    padding: 25px;
+    text-align: center;
+    text-decoration: none;
+    transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+  }
+  .tool-app-card:hover {
+    background: rgba(255, 255, 255, 0.06);
+    transform: translateY(-5px);
+    border-color: rgba(255, 255, 255, 0.2);
+  }
+  .tool-app-card i { font-size: 2.5rem; margin-bottom: 15px; display: block; }
+  .tool-app-card span { font-weight: 700; color: white; display: block; }
+  .tool-app-card small { color: var(--text-secondary); font-size: 0.75rem; }
+
+  /* Right Sidebar */
+  .right-widgets { display: flex; flex-direction: column; gap: 30px; }
+  .widget-card {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--glass-border);
+    border-radius: 30px;
+    padding: 25px;
+  }
+  .widget-title { font-weight: 800; font-size: 1rem; margin-bottom: 20px; color: white; display: flex; align-items: center; gap: 10px; }
+
+  @media (max-width: 1200px) {
+    .dashboard-wrapper { grid-template-columns: 1fr 300px; }
+    .side-nav { display: none; }
+  }
+  @media (max-width: 992px) {
+    .dashboard-wrapper { grid-template-columns: 1fr; }
+    .right-widgets { display: none; }
+  }
+</style>
+
+<div class="dashboard-wrapper">
+  <!-- Left Side Navigation -->
+  <aside class="side-nav">
+    <div class="nav-group">
+      <div class="nav-group-title">Learning Hub</div>
+      <a href="{% url 'notes' %}" class="nav-item-link"><i class="fas fa-sticky-note text-primary"></i> Notes</a>
+      <a href="{% url 'homework' %}" class="nav-item-link"><i class="fas fa-book text-danger"></i> Homework</a>
+      <a href="{% url 'todo' %}" class="nav-item-link"><i class="fas fa-check-circle text-success"></i> To-Do List</a>
+      <a href="{% url 'flashcards' %}" class="nav-item-link"><i class="fas fa-clone text-purple"></i> Flashcards</a>
     </div>
 
-    <div class="col-md-3">
-      <a href="{% url 'homework'%}">
-        <div class="card">
-          <img
-            class="card-img-top"
-            src="{% static 'images/homework.jpg' %}"
-            alt="Notes image"
-          />
-          <div class="card-body">
-            <h5 class="card-title">Homework</h5>
-            Add homeworks and assign them deadlines. They will be displayed
-            prioritised by deadlines
-          </div>
-        </div>
-      </a>
-    </div>
-    <div class="col-md-3">
-      <a href="{% url 'youtube'%}">
-        <div class="card">
-          <img
-            class="card-img-top"
-            src="{% static 'images/youtube.jpg' %}"
-            alt="Notes image"
-          />
-          <div class="card-body">
-            <h5 class="card-title">Youtube</h5>
-            Search Youtube and select your desired video to play it on youtube
-          </div>
-        </div>
-      </a>
-    </div>
-    <div class="col-md-3">
-      <a href="{% url 'todo'%}">
-        <div class="card">
-          <img
-            class="card-img-top"
-            src="{% static 'images/todo.jpg' %}"
-            alt="Notes image"
-          />
-          <div class="card-body">
-            <h5 class="card-title">To Do</h5>
-            Add your to-do lists for your day and remove them as you finish
-          </div>
-        </div>
-      </a>
-    </div>
-  </div>
-  <br /><br /><br />
-  <div class="row">
-    <div class="col-md-3">
-      <a href="{% url 'books'%}">
-        <div class="card mt-20">
-          <img
-            class="card-img-top"
-            src="{% static 'images/books.jpg' %}"
-            alt="Notes image"
-          />
-          <div class="card-body">
-            <h5 class="card-title">Books</h5>
-            Browse books from a list of neatly organised book menu
-          </div>
-        </div>
-      </a>
+    <div class="nav-group">
+      <div class="nav-group-title">Intelligence</div>
+      <a href="{% url 'ai-assistant' %}" class="nav-item-link"><i class="fas fa-robot text-indigo"></i> AI Assistant</a>
+      <a href="{% url 'analytics' %}" class="nav-item-link"><i class="fas fa-chart-pie text-success"></i> Analytics</a>
+      <a href="{% url 'focus' %}" class="nav-item-link"><i class="fas fa-stopwatch text-warning"></i> Deep Focus</a>
+      <a href="{% url 'whiteboard' %}" class="nav-item-link"><i class="fas fa-paint-brush text-light"></i> Whiteboard</a>
     </div>
 
-    <div class="col-md-3">
-      <a href="{% url 'dictionary'%}">
-        <div class="card">
-          <img
-            class="card-img-top"
-            src="{% static 'images/dictionary.jpg' %}"
-            alt="Notes image"
-          />
-          <div class="card-body">
-            <h5 class="card-title">Dictionary</h5>
-            A vocabulary from a book is troubling you? No problem, enter the
-            word, and the meaning will be displayed almost instantaneously.
-          </div>
-        </div>
-      </a>
+    <div class="nav-group">
+      <div class="nav-group-title">Knowledge</div>
+      <a href="{% url 'youtube' %}" class="nav-item-link"><i class="fab fa-youtube text-danger"></i> YouTube</a>
+      <a href="{% url 'books' %}" class="nav-item-link"><i class="fas fa-book-open text-warning"></i> Books</a>
+      <a href="{% url 'wiki' %}" class="nav-item-link"><i class="fab fa-wikipedia-w text-light"></i> WikiPedia</a>
     </div>
-    <div class="col-md-3">
-      <a href="{% url 'wiki'%}">
-        <div class="card">
-          <img
-            class="card-img-top"
-            src="{% static 'images/wiki.jpg' %}"
-            alt="Notes image"
-          />
-          <div class="card-body">
-            <h5 class="card-title">WikiPedia</h5>
-            Homework and Assignments? Search wikipedia to get fast results
-          </div>
-        </div>
-      </a>
+  </aside>
+
+  <!-- Main Dashboard Area -->
+  <main class="main-dash">
+    <div class="welcome-banner">
+      <h1 class="text-white">Hello, {{ user.username }}! 👋</h1>
+      <p class="text-secondary mb-0">Ready to crush your goals today? You have 4 assignments due soon.</p>
     </div>
 
-    <div class="col-md-3">
-      <a href="{% url 'conversion'%}">
-        <div class="card">
-          <img
-            class="card-img-top"
-            src="{% static 'images/conversion.jpg' %}"
-            alt="Notes image"
-          />
-          <div class="card-body">
-            <h5 class="card-title">Conversion</h5>
-            Check out the conversion table, that helps you to convert
-            measurements to more familiar ones of your choice.
-          </div>
+    <div class="stats-row">
+      <div class="stat-widget">
+        <div class="stat-icon bg-warning-subtle"><i class="fas fa-fire text-warning"></i></div>
+        <div>
+          <div class="h4 mb-0 text-white">{{ streak|default:0 }} Days</div>
+          <div class="small text-secondary">Study Streak</div>
         </div>
-      </a>
+      </div>
+      <div class="stat-widget">
+        <div class="stat-icon bg-info-subtle"><i class="fas fa-gem text-info"></i></div>
+        <div>
+          <div class="h4 mb-0 text-white">{{ points|default:0 }}</div>
+          <div class="small text-secondary">Learning XP</div>
+        </div>
+      </div>
+      <div class="stat-widget">
+        <div class="stat-icon bg-danger-subtle"><i class="fas fa-clock text-danger"></i></div>
+        <div>
+          <div class="h4 mb-0 text-white">4</div>
+          <div class="small text-secondary">Due Soon</div>
+        </div>
+      </div>
     </div>
-  </div>
-</section>
+
+    <div class="nav-group">
+        <div class="nav-group-title">Quick Access Tools</div>
+        <div class="tool-grid">
+            <a href="{% url 'grades' %}" class="tool-app-card">
+                <i class="fas fa-award text-primary"></i>
+                <span>Grades</span>
+                <small>Track GPA</small>
+            </a>
+            <a href="{% url 'timetable' %}" class="tool-app-card">
+                <i class="fas fa-calendar-alt text-pink"></i>
+                <span>Timetable</span>
+                <small>Class Schedule</small>
+            </a>
+            <a href="{% url 'exams' %}" class="tool-app-card">
+                <i class="fas fa-bullhorn text-danger"></i>
+                <span>Exams</span>
+                <small>Countdowns</small>
+            </a>
+            <a href="{% url 'dictionary' %}" class="tool-app-card">
+                <i class="fas fa-language text-info"></i>
+                <span>Dictionary</span>
+                <small>Word Help</small>
+            </a>
+            <a href="{% url 'conversion' %}" class="tool-app-card">
+                <i class="fas fa-exchange-alt text-success"></i>
+                <span>Convert</span>
+                <small>Unit Tools</small>
+            </a>
+        </div>
+    </div>
+  </main>
+
+  <!-- Right Sidebar Widgets -->
+  <aside class="right-widgets">
+    <div class="widget-card">
+      <div class="widget-title"><i class="fas fa-clock text-warning"></i> Upcoming Exams</div>
+      <div class="exam-mini-list">
+        <div class="p-3 mb-2 rounded-4" style="background: rgba(255,255,255,0.02);">
+            <div class="small text-secondary">Mathematics</div>
+            <div class="fw-bold text-white">Calculus Midterm</div>
+            <div class="small text-danger mt-1">3 Days Remaining</div>
+        </div>
+        <div class="p-3 rounded-4" style="background: rgba(255,255,255,0.02);">
+            <div class="small text-secondary">History</div>
+            <div class="fw-bold text-white">Final Project</div>
+            <div class="small text-warning mt-1">1 Week Remaining</div>
+        </div>
+      </div>
+      <a href="{% url 'exams' %}" class="btn btn-link btn-sm text-secondary p-0 mt-3">View all exams →</a>
+    </div>
+
+    <div class="widget-card">
+        <div class="widget-title"><i class="fas fa-sticky-note text-primary"></i> Recent Note</div>
+        <div class="p-3 rounded-4" style="background: rgba(255,255,255,0.02);">
+            <div class="fw-bold text-white">Quantum Physics Notes</div>
+            <div class="small text-secondary mt-1">"The study of matter and energy at the most fundamental level..."</div>
+        </div>
+        <a href="{% url 'notes' %}" class="btn btn-link btn-sm text-secondary p-0 mt-3">Go to notes →</a>
+      </div>
+  </aside>
+</div>
+
 {% endblock content %}
+

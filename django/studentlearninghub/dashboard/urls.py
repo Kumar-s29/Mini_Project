@@ -17,4 +17,19 @@ urlpatterns = [
     path("dictionary", views.dictionary, name="dictionary"),
     path("wiki", views.wiki, name="wiki"),
     path("conversion", views.conversion, name="conversion"),
+    
+    # New Features
+    path("grades", views.grades, name="grades"),
+    path("delete_grade/<int:pk>", views.delete_grade, name="delete-grade"),
+    path("exams", views.exams, name="exams"),
+    path("delete_exam/<int:pk>", views.delete_exam, name="delete-exam"),
+    path("timetable", views.timetable, name="timetable"),
+    path("delete_timetable/<int:pk>", views.delete_timetable, name="delete-timetable"),
+    path("flashcards", views.flashcards, name="flashcards"),
+    path("delete_flashcard/<int:pk>", views.delete_flashcard, name="delete-flashcard"),
+    path("analytics", views.analytics, name="analytics"),
+    path("focus", views.focus_timer, name="focus"),
+    path("whiteboard", views.whiteboard, name="whiteboard"),
+    path("ai_assistant", views.ai_assistant, name="ai-assistant"),
+    path("export_note/<int:pk>", views.export_note_pdf, name="export-note"),
 ]

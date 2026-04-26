@@ -1,23 +1,150 @@
-{% extends 'dashboard/base.html'%} {% load static %} {% load crispy_forms_tags
-%} {% block content %}
-<div class="container">
-  <form method="POST">
-    {% csrf_token %}
-    <fieldset class="form-group">
-      <legend class="border-bottom mb-4">Log In</legend>
-      {{form }}
-    </fieldset>
-    <div class="form-group">
-      <button href="" class="btn btn-outline-info" type="submit">
-        Sign In
-      </button>
+{% extends 'dashboard/base.html'%} {% load static %}
+{% block content %}
+<style>
+  .auth-container {
+    max-width: 500px;
+    margin: 80px auto;
+    padding: 0 20px;
+  }
+  .auth-card {
+    background: rgba(255, 255, 255, 0.02);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    border-radius: 32px;
+    padding: 60px 48px;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4);
+  }
+  .auth-header {
+    text-align: center;
+    margin-bottom: 45px;
+  }
+  .auth-header .icon {
+    font-size: 4rem;
+    background: linear-gradient(135deg, #2dd4bf 0%, #22d3ee 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 20px;
+    display: inline-block;
+  }
+  .auth-header h2 {
+    color: white;
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 10px;
+    letter-spacing: -1px;
+  }
+  .auth-header p {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+  }
+  .auth-form label {
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 10px;
+    display: block;
+  }
+  .auth-form input {
+    background: rgba(15, 23, 42, 0.4);
+    border: 1px solid var(--glass-border);
+    border-radius: 14px;
+    padding: 14px 20px;
+    transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+    width: 100%;
+    font-size: 1rem;
+    color: white;
+    margin-bottom: 25px;
+  }
+  .auth-form input:focus {
+    background: rgba(15, 23, 42, 0.6);
+    border-color: #2dd4bf;
+    box-shadow: 0 0 0 4px rgba(45, 212, 191, 0.1);
+    outline: none;
+  }
+  .auth-btn {
+    background: linear-gradient(135deg, #2dd4bf 0%, #0d9488 100%);
+    border: none;
+    border-radius: 14px;
+    padding: 16px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: white;
+    width: 100%;
+    transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+    box-shadow: 0 10px 25px rgba(45, 212, 191, 0.3);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  }
+  .auth-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 35px rgba(45, 212, 191, 0.4);
+    filter: brightness(1.1);
+  }
+  .auth-footer {
+    text-align: center;
+    margin-top: 35px;
+    padding-top: 30px;
+    border-top: 1px solid var(--glass-border);
+  }
+  .auth-footer a {
+    color: #2dd4bf;
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.3s ease;
+  }
+  .auth-footer a:hover {
+    color: #22d3ee;
+    text-decoration: underline;
+  }
+  .error-message {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    padding: 16px;
+    border-radius: 12px;
+    margin-bottom: 25px;
+    color: #f87171;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+</style>
+
+<div class="auth-container">
+  <div class="auth-card">
+    <div class="auth-header">
+      <div class="icon">
+        <i class="fas fa-user-lock"></i>
+      </div>
+      <h2>Welcome Back</h2>
+      <p>Sign in to continue your learning journey</p>
     </div>
-  </form>
-  <div class="border-top pt-3">
-    <small class="text-muted"
-      >Need an Account?
-      <a class="ml-2" href="{% url 'register' %}">Create an Account</a>
-    </small>
+    
+    {% if form.errors %}
+      <div class="error-message">
+        <i class="fas fa-exclamation-circle"></i> <strong>Invalid username or password.</strong>
+      </div>
+    {% endif %}
+    {% if form.non_field_errors %}
+      <div class="error-message">
+        {{ form.non_field_errors }}
+      </div>
+    {% endif %}
+    
+    <form method="POST" action="{% url 'login' %}" class="auth-form">
+      {% csrf_token %}
+      {{form.as_p}}
+      <button class="auth-btn" type="submit">
+        <i class="fas fa-arrow-right"></i> Sign In
+      </button>
+    </form>
+    
+    <div class="auth-footer">
+      <span style="color: #7f8c8d;">Need an Account?</span>
+      <a href="{% url 'register' %}">Create an Account</a>
+    </div>
   </div>
 </div>
 {% endblock content%}

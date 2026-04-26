@@ -1,0 +1,120 @@
+{% extends 'dashboard/base.html' %} 
+{% load crispy_forms_tags %}
+{% block content %}
+<style>
+  .flash-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 60px 20px;
+  }
+  .flashcard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 30px;
+  }
+  .flip-card {
+    background-color: transparent;
+    height: 250px;
+    perspective: 1000px;
+    cursor: pointer;
+  }
+  .flip-card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    transition: transform 0.6s;
+    transform-style: preserve-3d;
+  }
+  .flip-card.flipped .flip-card-inner {
+    transform: rotateY(180deg);
+  }
+  .flip-card-front, .flip-card-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 30px;
+    border-radius: 24px;
+    border: 1px solid var(--glass-border);
+  }
+  .flip-card-front {
+    background: rgba(255, 255, 255, 0.05);
+    color: white;
+    backdrop-filter: blur(10px);
+  }
+  .flip-card-back {
+    background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+    color: white;
+    transform: rotateY(180deg);
+  }
+  .flash-delete {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    z-index: 10;
+    color: rgba(255,255,255,0.5);
+  }
+  .flash-delete:hover { color: #ef4444; }
+</style>
+
+<div class="flash-container">
+  <div class="d-flex justify-content-between align-items-center mb-5">
+    <div>
+      <h1 class="display-4 fw-bold text-white">🗂️ Flashcards</h1>
+      <p class="text-secondary">Master your subjects with active recall</p>
+    </div>
+    <button class="btn btn-info px-4 py-2 rounded-3 text-white fw-bold" data-bs-toggle="modal" data-bs-target="#addCardModal">
+      <i class="fas fa-plus me-2"></i> Create Card
+    </button>
+  </div>
+
+  <div class="flashcard-grid">
+    {% for card in cards %}
+    <div class="position-relative">
+        <a href="{% url 'delete-flashcard' card.id %}" class="flash-delete"><i class="fas fa-trash"></i></a>
+        <div class="flip-card" onclick="this.classList.toggle('flipped')">
+            <div class="flip-card-inner">
+                <div class="flip-card-front">
+                    <span class="badge bg-primary mb-3">{{ card.subject }}</span>
+                    <h4 class="fw-bold">{{ card.question }}</h4>
+                    <p class="text-secondary mt-3 small">Click to see answer</p>
+                </div>
+                <div class="flip-card-back">
+                    <h4 class="fw-bold">{{ card.answer }}</h4>
+                    <p class="mt-3 small opacity-75">Click to flip back</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="addCardModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content bg-dark border-secondary">
+      <div class="modal-header border-secondary">
+        <h5 class="modal-title text-white">Create New Flashcard</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <form method="POST">
+        <div class="modal-body">
+          {% csrf_token %}
+          {{ form|crispy }}
+        </div>
+        <div class="modal-footer border-secondary">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-info text-white fw-bold">Create Card</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

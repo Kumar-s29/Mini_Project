@@ -1,0 +1,120 @@
+{% extends 'dashboard/base.html' %} 
+{% block content %}
+<style>
+  .wb-container {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 0 20px;
+  }
+  .canvas-wrapper {
+    background: white;
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--glass-border);
+  }
+  #whiteboard {
+    background: white;
+    cursor: crosshair;
+    display: block;
+  }
+  .wb-toolbar {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    padding: 15px 30px;
+    border-radius: 20px;
+    margin-bottom: 20px;
+    display: flex;
+    gap: 20px;
+    align-items: center;
+  }
+  .color-picker {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: none;
+    padding: 0;
+    overflow: hidden;
+    cursor: pointer;
+  }
+</style>
+
+<div class="wb-container">
+  <div class="mb-4 d-flex justify-content-between align-items-center">
+    <div>
+        <h1 class="h2 fw-bold text-white mb-0">🎨 Digital Whiteboard</h1>
+        <p class="text-secondary small">Sketch diagrams and solve equations</p>
+    </div>
+    <button class="btn btn-outline-danger" onclick="clearCanvas()">Clear All</button>
+  </div>
+
+  <div class="wb-toolbar">
+    <div class="d-flex align-items-center gap-2">
+        <label class="text-secondary small fw-bold">COLOR</label>
+        <input type="color" id="colorPicker" class="color-picker" value="#000000">
+    </div>
+    <div class="d-flex align-items-center gap-2">
+        <label class="text-secondary small fw-bold">SIZE</label>
+        <input type="range" id="sizePicker" min="1" max="20" value="5">
+    </div>
+    <div class="ms-auto text-secondary small">
+        <i class="fas fa-info-circle me-1"></i> Draw with your mouse or stylus
+    </div>
+  </div>
+
+  <div class="canvas-wrapper">
+    <canvas id="whiteboard"></canvas>
+  </div>
+</div>
+
+<script>
+  const canvas = document.getElementById('whiteboard');
+  const ctx = canvas.getContext('2d');
+  const colorPicker = document.getElementById('colorPicker');
+  const sizePicker = document.getElementById('sizePicker');
+
+  let drawing = false;
+
+  function resize() {
+    canvas.width = canvas.parentElement.clientWidth;
+    canvas.height = 600;
+  }
+
+  window.addEventListener('resize', resize);
+  resize();
+
+  function startPosition(e) {
+    drawing = true;
+    draw(e);
+  }
+
+  function endPosition() {
+    drawing = false;
+    ctx.beginPath();
+  }
+
+  function draw(e) {
+    if (!drawing) return;
+    ctx.lineWidth = sizePicker.value;
+    ctx.lineCap = 'round';
+    ctx.strokeStyle = colorPicker.value;
+
+    const rect = canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+
+    ctx.lineTo(x, y);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+  }
+
+  canvas.addEventListener('mousedown', startPosition);
+  canvas.addEventListener('mouseup', endPosition);
+  canvas.addEventListener('mousemove', draw);
+
+  function clearCanvas() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+  }
+</script>
+{% endblock %}

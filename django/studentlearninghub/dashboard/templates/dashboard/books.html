@@ -1,53 +1,220 @@
 {% extends 'dashboard/base.html' %} {% load static %} {% block content %}
+<style>
+  .books-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 60px 20px;
+  }
+  .books-header {
+    text-align: center;
+    margin-bottom: 60px;
+  }
+  .books-header h2 {
+    color: white;
+    font-size: 3rem;
+    font-weight: 800;
+    margin-bottom: 15px;
+    background: linear-gradient(to right, #38bdf8, #818cf8);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .books-header p {
+    color: var(--text-secondary);
+    font-size: 1.2rem;
+  }
+  .search-box {
+    background: rgba(255, 255, 255, 0.02);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    padding: 40px;
+    border-radius: 24px;
+    margin-bottom: 60px;
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+  }
+  .search-box label {
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 12px;
+    display: block;
+  }
+  .search-box input[type="text"] {
+    background: rgba(15, 23, 42, 0.4);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    padding: 14px 20px;
+    font-size: 1rem;
+    color: white;
+    width: 100%;
+    margin-bottom: 20px;
+    transition: all 0.3s ease;
+  }
+  .search-box input[type="text"]:focus {
+    background: rgba(15, 23, 42, 0.6);
+    border-color: #38bdf8;
+    box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.1);
+    outline: none;
+  }
+  .submit-btn {
+    background: linear-gradient(135deg, #38bdf8 0%, #3b82f6 100%);
+    border: none;
+    border-radius: 12px;
+    padding: 14px 48px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: white;
+    transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+    cursor: pointer;
+  }
+  .submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(56, 189, 248, 0.3);
+    filter: brightness(1.1);
+  }
+  .book-card {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--glass-border);
+    border-radius: 24px;
+    overflow: hidden;
+    transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+    height: 100%;
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+  }
+  .book-card:hover {
+    transform: translateY(-10px);
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(56, 189, 248, 0.4);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    text-decoration: none;
+  }
+  .book-image-wrapper {
+    height: 320px;
+    overflow: hidden;
+    background: #000;
+    position: relative;
+  }
+  .book-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.8;
+    transition: all 0.5s ease;
+  }
+  .book-card:hover .book-image {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+  .book-placeholder {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 4rem;
+    color: rgba(255, 255, 255, 0.2);
+    background: linear-gradient(135deg, rgba(56, 189, 248, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%);
+  }
+  .book-card .card-body {
+    padding: 30px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  .book-title {
+    color: white;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+    line-height: 1.3;
+  }
+  .book-subtitle {
+    color: #38bdf8;
+    font-size: 0.95rem;
+    margin-bottom: 15px;
+    font-weight: 600;
+  }
+  .book-description {
+    color: var(--text-secondary);
+    font-size: 1rem;
+    line-height: 1.6;
+    margin-bottom: 20px;
+  }
+  .book-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-top: auto;
+  }
+  .book-meta span {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 6px 12px;
+    border-radius: 8px;
+  }
+</style>
 
-<section class="text-center container">
-  <h2>Search books and browse your favorite</h2>
-  <p>just enter the search query to obtain the results</p>
-  <b></b>
-  <form action="" method="post">
-    {% csrf_token %} {{form}}
-    <input class="btn btn-danger" type="submit" value="Submit" />
-  </form>
-  <br />
-  {% for result in results %}
-  <a href="{{result.preview}}" target="_blank">
-    <div class="card">
-      <div class="card-header">
-        <div class="row">
-          <div class="col-md-3">
-            <img class="img-fluid" src="{{result.thumbnail}}" alt="" />
+<div class="books-container">
+  <div class="books-header">
+    <h2>📚 Search Books</h2>
+    <p>Search books and browse your favorite</p>
+  </div>
+  
+  <div class="search-box">
+    <form action="" method="post">
+      {% csrf_token %}
+      {{form}}
+      <div class="text-center">
+        <input class="submit-btn" type="submit" value="Submit" />
+      </div>
+    </form>
+  </div>
+  
+  <div class="row">
+    {% for result in results %}
+    <div class="col-md-4 mb-5">
+      <a href="{{result.preview}}" target="_blank" class="book-card">
+        <div class="book-image-wrapper">
+          {% if result.thumbnail %}
+          <img src="{{result.thumbnail}}" class="book-image" alt="{{result.title}}" />
+          {% else %}
+          <div class="book-placeholder">
+            <i class="fa fa-book"></i>
           </div>
-          <div class="col-md-9">
-            <h3 class="p-0 m-0">{{result.title}}</h3>
-            <b>
-              <u>
-                <h5 class="p-0 m-0">{{result.subtitle}}</h5>
-              </u>
-            </b>
-            {% if result.description %}
-            <h6 class="p-0 m-1">{{ result.description }}</h6>
-          {% endif %} 
-          {% if result.categories %}
-            <b>
-              <h6 class="ml-0 mt-3">
-                Category: {% for Category in result.categories %}{{ Category }}{% endfor %}
-              </h6>
-            </b>
-          {% endif %} 
-          {% if result.count %}
-            <h6 class="ml-0 mt-1">Pages: {{ result.count }}</h6>
-          {% endif %} 
-          {% if result.rating %}
-            <h6 class="ml-0 mt-1">Rating: {{ result.rating }}</h6>
-          {% endif %}          
-            </b>
+          {% endif %}
+        </div>
+        <div class="card-body">
+          <h3 class="book-title">{{result.title}}</h3>
+          {% if result.subtitle %}
+          <p class="book-subtitle">{{result.subtitle|truncatechars:50}}</p>
+          {% endif %}
+          {% if result.description %}
+          <p class="book-description">{{result.description|truncatewords:15}}</p>
+          {% endif %}
+          <div class="book-meta">
+            {% if result.categories %}
+            <span><i class="fas fa-tags"></i> {% for Category in result.categories %}{{ Category }}{% endfor %}</span>
+            {% endif %}
+            {% if result.count %}
+            <span><i class="fas fa-file-alt"></i> {{result.count}} pages</span>
+            {% endif %}
+            {% if result.rating %}
+            <span><i class="fas fa-star"></i> {{result.rating}}/5</span>
+            {% endif %}
           </div>
         </div>
-      </div>
+      </a>
     </div>
-  </a>
-  {% endfor %}
-  <br />
-</section>
+    {% endfor %}
+  </div>
+</div>
 
 {% endblock content %}

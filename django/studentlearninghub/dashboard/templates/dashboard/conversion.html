@@ -1,27 +1,131 @@
 {% extends 'dashboard/base.html' %} {% load static %} {% load crispy_forms_tags
 %} {% block content %}
-<div class="container text-center">
-  <form method="POST" action="">
-    {% csrf_token %}
-    <div class="form-group">
-      <legend class="border-bottom mb-4"></legend>
-      {{ form }}
-      <button class="btn btn-outline-info" type="submit">Select</button>
-    </div>
-    {% if input %}
-    <fieldset class="form-group">
-      <legend class="border-bottom mb-4"></legend>
-      <div class="row">
-        <div class="col-md-4">{{ m_form.input |crispy}}</div>
-        <div class="col-md-4">{{ m_form.measure1 |crispy}}</div>
-        <div class="col-md-4">{{ m_form.measure2|crispy }}</div>
+<style>
+  .conversion-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 60px 20px;
+  }
+  .conversion-header {
+    text-align: center;
+    margin-bottom: 60px;
+  }
+  .conversion-header h2 {
+    color: white;
+    font-size: 3rem;
+    font-weight: 800;
+    margin-bottom: 15px;
+    background: linear-gradient(to right, #10b981, #34d399);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .conversion-form {
+    background: rgba(255, 255, 255, 0.02);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    border-radius: 24px;
+    padding: 48px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+  }
+  .conversion-form label {
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 10px;
+    display: block;
+  }
+  .conversion-form input, .conversion-form select {
+    background: rgba(15, 23, 42, 0.4);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    padding: 14px 20px;
+    color: white;
+    transition: all 0.3s ease;
+    width: 100%;
+    margin-bottom: 20px;
+  }
+  .conversion-form input:focus, .conversion-form select:focus {
+    background: rgba(15, 23, 42, 0.6);
+    border-color: #10b981;
+    box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
+    outline: none;
+  }
+  .select-btn, .convert-btn {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    border: none;
+    border-radius: 12px;
+    padding: 14px 48px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: white;
+    transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+    cursor: pointer;
+  }
+  .select-btn:hover, .convert-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3);
+    filter: brightness(1.1);
+    color: white;
+  }
+  .answer-box {
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    padding: 24px;
+    border-radius: 16px;
+    margin: 30px 0;
+    font-size: 1.4rem;
+    color: #10b981;
+    font-weight: 700;
+    text-align: center;
+    backdrop-filter: blur(5px);
+  }
+  legend {
+    color: white;
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: 25px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid rgba(16, 185, 129, 0.3);
+    width: 100%;
+  }
+</style>
+
+<div class="conversion-container">
+  <div class="conversion-header">
+    <h2>🔢 Unit Converter</h2>
+    <p style="color: #7f8c8d; font-size: 1.1rem;">Convert between different units</p>
+  </div>
+  
+  <div class="conversion-form">
+    <form method="POST" action="">
+      {% csrf_token %}
+      <div class="form-group">
+        {{ form }}
+        <div class="text-center">
+          <button class="select-btn" type="submit">Select</button>
+        </div>
       </div>
-    </fieldset>
-    <fieldset class="form-group">{{ answer }}</fieldset>
-    <div class="form-group">
-      <button class="btn btn-outline-info" type="submit">Convert</button>
-    </div>
-    {% endif %}
-  </form>
+      
+      {% if input %}
+      <fieldset class="form-group mt-4">
+        <legend>Enter Conversion Details</legend>
+        <div class="row">
+          <div class="col-md-4">{{ m_form.input }}</div>
+          <div class="col-md-4">{{ m_form.measure1 }}</div>
+          <div class="col-md-4">{{ m_form.measure2 }}</div>
+        </div>
+      </fieldset>
+      
+      {% if answer %}
+      <div class="answer-box">
+        Result: {{ answer }}
+      </div>
+      {% endif %}
+      
+      <div class="form-group text-center">
+        <button class="convert-btn" type="submit">Convert</button>
+      </div>
+      {% endif %}
+    </form>
+  </div>
 </div>
 {% endblock content %}

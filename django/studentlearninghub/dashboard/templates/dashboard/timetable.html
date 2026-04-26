@@ -1,0 +1,108 @@
+{% extends 'dashboard/base.html' %} 
+{% load crispy_forms_tags %}
+{% block content %}
+<style>
+  .tt-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 60px 20px;
+  }
+  .tt-day-column {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    padding: 20px;
+    height: 100%;
+    min-height: 400px;
+  }
+  .tt-entry {
+    background: rgba(99, 102, 241, 0.1);
+    border-left: 4px solid #6366f1;
+    padding: 15px;
+    border-radius: 12px;
+    margin-bottom: 15px;
+    position: relative;
+    transition: all 0.3s ease;
+  }
+  .tt-entry:hover {
+    background: rgba(99, 102, 241, 0.2);
+    transform: scale(1.02);
+  }
+  .tt-time {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    font-weight: 700;
+  }
+  .tt-subject {
+    color: white;
+    font-weight: 800;
+    margin: 5px 0;
+  }
+  .tt-room {
+    font-size: 0.8rem;
+    color: #818cf8;
+  }
+  .delete-tt {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    color: rgba(255,255,255,0.3);
+    font-size: 0.8rem;
+  }
+  .delete-tt:hover { color: #ef4444; }
+</style>
+
+<div class="tt-container">
+  <div class="d-flex justify-content-between align-items-center mb-5">
+    <div>
+      <h1 class="display-4 fw-bold text-white">🗓️ Weekly Timetable</h1>
+      <p class="text-secondary">Your academic schedule at a glance</p>
+    </div>
+    <button class="btn btn-primary px-4 py-2 rounded-3" data-bs-toggle="modal" data-bs-target="#addEntryModal">
+      <i class="fas fa-plus me-2"></i> Add Class
+    </button>
+  </div>
+
+  <div class="row row-cols-1 row-cols-md-7 g-3">
+    {% for day, entries in schedule.items %}
+    <div class="col">
+      <h5 class="text-center text-white mb-3">{{ day }}</h5>
+      <div class="tt-day-column">
+        {% for entry in entries %}
+        <div class="tt-entry">
+          <div class="tt-time">{{ entry.start_time|time:"H:i" }} - {{ entry.end_time|time:"H:i" }}</div>
+          <div class="tt-subject">{{ entry.subject }}</div>
+          {% if entry.room %}<div class="tt-room"><i class="fas fa-map-marker-alt me-1"></i>{{ entry.room }}</div>{% endif %}
+          <a href="{% url 'delete-timetable' entry.id %}" class="delete-tt"><i class="fas fa-times"></i></a>
+        </div>
+        {% empty %}
+        <div class="text-center py-5 text-secondary small opacity-50">No classes</div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- Add Entry Modal -->
+<div class="modal fade" id="addEntryModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content bg-dark border-secondary">
+      <div class="modal-header border-secondary">
+        <h5 class="modal-title text-white">Add New Class</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <form method="POST">
+        <div class="modal-body">
+          {% csrf_token %}
+          {{ form|crispy }}
+        </div>
+        <div class="modal-footer border-secondary">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary">Save Class</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

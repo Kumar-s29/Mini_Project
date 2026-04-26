@@ -1,41 +1,188 @@
 {% extends 'dashboard/base.html' %} {% load static %} {% block content %}
-<section class="text-center container">
-  <h2>Search Videos in Youtube</h2>
-  <p>search videos and select any video to open in youtube</p>
-  <form action="" method="post">
-    {% csrf_token %} {{form}}
-    <input class="btn btn-danger" type="submit" value="Submit" />
-  </form>
-  <br />
-  {% for result in results%}
+<style>
+  .youtube-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 60px 20px;
+  }
+  .youtube-header {
+    text-align: center;
+    margin-bottom: 60px;
+  }
+  .youtube-header h2 {
+    color: white;
+    font-size: 3rem;
+    font-weight: 800;
+    margin-bottom: 15px;
+    background: linear-gradient(to right, #ef4444, #f87171);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .youtube-header p {
+    color: var(--text-secondary);
+    font-size: 1.2rem;
+  }
+  .search-box {
+    background: rgba(255, 255, 255, 0.02);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    padding: 40px;
+    border-radius: 24px;
+    margin-bottom: 60px;
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+  }
+  .search-box label {
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 12px;
+    display: block;
+  }
+  .search-box input[type="text"] {
+    background: rgba(15, 23, 42, 0.4);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+    padding: 14px 20px;
+    font-size: 1rem;
+    color: white;
+    width: 100%;
+    margin-bottom: 20px;
+    transition: all 0.3s ease;
+  }
+  .search-box input[type="text"]:focus {
+    background: rgba(15, 23, 42, 0.6);
+    border-color: #ef4444;
+    box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.1);
+    outline: none;
+  }
+  .submit-btn {
+    background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
+    border: none;
+    border-radius: 12px;
+    padding: 14px 48px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: white;
+    transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+    cursor: pointer;
+  }
+  .submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(239, 68, 68, 0.3);
+    filter: brightness(1.1);
+  }
+  .video-card {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    margin-bottom: 30px;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+  }
+  .video-card:hover {
+    transform: translateY(-5px);
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(239, 68, 68, 0.4);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+  }
+  .video-card .card-body {
+    padding: 24px;
+  }
+  .video-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+  }
+  .video-card:hover img {
+    transform: scale(1.05);
+  }
+  .video-title {
+    color: white;
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+    line-height: 1.3;
+  }
+  .video-channel {
+    color: #ef4444;
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .video-description {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin-bottom: 20px;
+  }
+  .video-meta {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+  }
+  .video-meta span {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 6px 12px;
+    border-radius: 8px;
+  }
+</style>
 
-  <a href="{{result.link}}" target="_blank">
-    <div class="card">
-      <div class="card-header">
-        <div class="row">
+<div class="youtube-container">
+  <div class="youtube-header">
+    <h2>🎥 Search Videos in Youtube</h2>
+    <p>Search videos and select any video to open in YouTube</p>
+  </div>
+  
+  <div class="search-box">
+    <form action="" method="post">
+      {% csrf_token %}
+      {{form}}
+      <div class="text-center">
+        <input class="submit-btn" type="submit" value="Submit" />
+      </div>
+    </form>
+  </div>
+  
+  <div class="results-container">
+    {% for result in results %}
+    <a href="{{result.link}}" target="_blank" style="text-decoration: none; color: inherit;">
+      <div class="video-card">
+        <div class="row g-0">
           <div class="col-md-5">
-            <img class="img-fluid" src="{{result.thumbnail}}" alt="" />
+            <div style="height: 100%; min-height: 250px; overflow: hidden;">
+              <img src="{{result.thumbnail}}" alt="{{result.title}}" />
+            </div>
           </div>
           <div class="col-md-7">
-            <h3 class="p-0 m-0">{{result.title}}</h3>
-            <b>
-              <u>
-                <h5 class="p-0 m-0">{{result.channel}}</h5>
-              </u>
-            </b>
-            <h6 class="p-0 m-1">{{result.description}}</h6>
-            <b>
-              <h6 class="ml-0 mt-3">{{result.duration}}</h6>
-              <h6 class="ml-0 mt-1">{{result.views}}</h6>
-              <h6 class="ml-0 mt-1">{{result.published}}</h6>
-            </b>
+            <div class="card-body">
+              <h3 class="video-title">{{result.title}}</h3>
+              <p class="video-channel"><i class="fab fa-youtube"></i> {{result.channel}}</p>
+              <p class="video-description">{{result.description}}</p>
+              <div class="video-meta">
+                <span><i class="far fa-clock"></i> {{result.duration}}</span>
+                <span><i class="far fa-eye"></i> {{result.views}}</span>
+                <span><i class="far fa-calendar-alt"></i> {{result.published}}</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  </a>
-  {% endfor %}
-  <br />
-</section>
+    </a>
+    {% endfor %}
+  </div>
+</div>
 
 {% endblock content %}

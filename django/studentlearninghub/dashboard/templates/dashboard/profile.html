@@ -1,122 +1,191 @@
-{% extends 'dashboard/base.html' %} {% load static %} {% load
-crispy_forms_tags%} {% block content %}
-<section class="text-center">
-  <div class="container">
-    {% if not todos_done%}
-    <h2>Due ToDos</h2>
-    <table class="table table-striped table-bordered table-hover table-dark">
-      <thead>
-        <tr>
-          <th scope="col">#</th>
-          <th scope="col">Title</th>
-          <th scope="col">Status</th>
-          <th scope="col">Delete</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for todo in todos %}
-        <tr>
-          <th scope="row">1{{forloop.counter}}</th>
-          <td>{{todo.title}}</td>
-          <td>
-            <a href="{% url 'update-todo' todo.id %}">
-              <div class="form-check">
-                {% if todo.is_finished%}
-                <input
-                  class="form-check-input"
-                  type="checkbox"
-                  value=""
-                  checked
-                />
-                {% else %}
-                <input class="form-check-input" type="checkbox" value="" />
-                {% endif %}
-                <label
-                  class="form-check-label text-light"
-                  for="flexCheckDefault"
-                >
-                  Mark as Completed
-                </label>
-              </div>
-            </a>
-          </td>
+{% extends 'dashboard/base.html' %} {% load static %} {% block content %}
+<style>
+  .profile-wrapper {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 0 20px;
+  }
+  
+  /* Hero Header */
+  .profile-hero {
+    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+    border: 1px solid var(--glass-border);
+    border-radius: 40px;
+    height: 350px;
+    position: relative;
+    margin-bottom: 120px;
+    overflow: visible;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  }
+  .profile-cover {
+    height: 200px;
+    background: linear-gradient(90deg, #6366f1, #a855f7);
+    border-radius: 40px 40px 0 0;
+    opacity: 0.3;
+  }
+  .avatar-container {
+    position: absolute;
+    bottom: -60px;
+    left: 60px;
+    display: flex;
+    align-items: flex-end;
+    gap: 30px;
+  }
+  .profile-avatar {
+    width: 160px;
+    height: 160px;
+    background: rgba(15, 23, 42, 0.8);
+    backdrop-filter: blur(20px);
+    border: 4px solid var(--glass-border);
+    border-radius: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 4rem;
+    color: white;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+  }
+  .profile-info h1 { font-size: 2.5rem; font-weight: 800; color: white; margin-bottom: 5px; }
+  .profile-info p { color: var(--text-secondary); margin-bottom: 10px; }
 
-          <td>
-            <a href="{% url 'delete-todo' todo.id%}"
-              ><i class="fa fa-trash fa-2x"></i
-            ></a>
-          </td>
-        </tr>
-        {% endfor%}
-      </tbody>
-    </table>
-    {% else %}
-    <h3>All To dos are completed!!!!</h3>
-    {% endif %}
+  /* Achievement Bento */
+  .achievement-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    margin-bottom: 60px;
+  }
+  .achieve-card {
+    background: rgba(255, 255, 255, 0.02);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--glass-border);
+    border-radius: 30px;
+    padding: 30px;
+    text-align: center;
+    transition: all 0.3s ease;
+  }
+  .achieve-card:hover { background: rgba(255, 255, 255, 0.05); transform: translateY(-5px); }
+  .achieve-icon { font-size: 1.5rem; margin-bottom: 15px; width: 50px; height: 50px; line-height: 50px; border-radius: 15px; margin: 0 auto 15px; }
+  .achieve-val { font-size: 1.8rem; font-weight: 800; color: white; }
+  .achieve-label { color: var(--text-secondary); font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
 
-    <a href="{%url 'todo'%}" class="btn btn-danger">To Do</a>
-    <br /><br />
+  /* Task Management Section */
+  .profile-content { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+  .glass-pane {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--glass-border);
+    border-radius: 35px;
+    padding: 40px;
+  }
+  .pane-title { font-weight: 800; color: white; margin-bottom: 30px; display: flex; align-items: center; gap: 15px; }
+  
+  .task-item {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid transparent;
+    border-radius: 20px;
+    padding: 20px;
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.3s ease;
+  }
+  .task-item:hover { border-color: var(--glass-border); background: rgba(255, 255, 255, 0.05); }
+  .task-meta { display: flex; flex-direction: column; }
+  .task-title { color: white; font-weight: 700; }
+  .task-sub { font-size: 0.85rem; color: var(--text-secondary); }
 
-    {% if not homework_done%}
-    <h2>Due Homeworks</h2>
-    <table class="table table-striped table-bordered table-hover table-dark">
-      <thead>
-        <tr>
-          <th scope="col">#</th>
-          <th scope="col">Subject</th>
-          <th scope="col">Title</th>
-          <th scope="col">Description</th>
-          <th scope="col">Due</th>
-          <th scope="col">Status</th>
-          <th scope="col">Delete</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for homework in homeworks %}
-        <tr>
-          <th scope="row">{{forloop.counter}}</th>
-          <td>{{homework.subject}}</td>
-          <td>{{homework.title}}</td>
-          <td>{{homework.description}}</td>
-          <td>{{homework.due}}</td>
+  @media (max-width: 992px) {
+    .achievement-grid { grid-template-columns: 1fr 1fr; }
+    .profile-content { grid-template-columns: 1fr; }
+    .avatar-container { left: 50%; transform: translateX(-50%); text-align: center; flex-direction: column; align-items: center; }
+  }
+</style>
 
-          <td>
-            <a href="{% url 'update-homework' homework.id %}">
-              <div class="form-check">
-                {% if homework.is_finished%}
-                <input
-                  class="form-check-input"
-                  type="checkbox"
-                  value=""
-                  checked
-                />
-                {%else%}
-                <input class="form-check-input" type="checkbox" value="" />
-                {%endif%}
-                <label
-                  class="form-check-label text-light"
-                  for="flexCheckDefault"
-                >
-                  Mark as Completed
-                </label>
-              </div>
-            </a>
-          </td>
-          <td>
-            <a href="{% url 'delete-homework' homework.id %}"
-              ><i class="fa fa-trash fa-2x"></i
-            ></a>
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-    {%else%}
-    <h3>All To homeworks are completed!!!!</h3>
-    {% endif %}
-
-    <a href="{% url 'homework'%}" class="btn btn-danger">Homeworks</a>
+<div class="profile-wrapper">
+  <!-- Profile Hero Header -->
+  <div class="profile-hero">
+    <div class="profile-cover"></div>
+    <div class="avatar-container">
+      <div class="profile-avatar">
+        {{ user.username|first|upper }}
+      </div>
+      <div class="profile-info">
+        <h1>{{ user.username }}</h1>
+        <p><i class="fas fa-calendar-alt me-2"></i>Member since {{ user.date_joined|date:"F Y" }}</p>
+        <div class="d-flex gap-2">
+            <span class="badge bg-primary px-3 py-2 rounded-pill">Elite Learner</span>
+            <span class="badge bg-indigo px-3 py-2 rounded-pill" style="background: #6366f1;">Top 5%</span>
+        </div>
+      </div>
+    </div>
   </div>
-</section>
 
+  <!-- Achievement Stats Bento -->
+  <div class="achievement-grid">
+    <div class="achieve-card">
+        <div class="achieve-icon bg-warning-subtle text-warning"><i class="fas fa-fire"></i></div>
+        <div class="achieve-val">{{ streak }}</div>
+        <div class="achieve-label">Study Streak</div>
+    </div>
+    <div class="achieve-card">
+        <div class="achieve-icon bg-info-subtle text-info"><i class="fas fa-gem"></i></div>
+        <div class="achieve-val">{{ points }}</div>
+        <div class="achieve-label">XP Points</div>
+    </div>
+    <div class="achieve-card">
+        <div class="achieve-icon bg-primary-subtle text-primary"><i class="fas fa-sticky-note"></i></div>
+        <div class="achieve-val">{{ total_notes }}</div>
+        <div class="achieve-label">Total Notes</div>
+    </div>
+    <div class="achieve-card">
+        <div class="achieve-icon bg-success-subtle text-success"><i class="fas fa-chart-line"></i></div>
+        <div class="achieve-val">{{ average }}%</div>
+        <div class="achieve-label">Average Grade</div>
+    </div>
+  </div>
+
+  <!-- Content Section -->
+  <div class="profile-content">
+    <!-- To-Dos Pane -->
+    <div class="glass-pane">
+        <div class="pane-title"><i class="fas fa-check-circle text-success"></i> Pending Tasks</div>
+        {% for todo in todos %}
+        <div class="task-item">
+            <div class="task-meta">
+                <span class="task-title">{{ todo.title }}</span>
+                <span class="task-sub">Productivity Tool</span>
+            </div>
+            <a href="{% url 'update-todo' todo.id %}" class="btn btn-sm btn-outline-success rounded-pill">Complete</a>
+        </div>
+        {% empty %}
+        <div class="text-center py-5 opacity-50">
+            <i class="fas fa-check-double fa-3x mb-3"></i>
+            <p>All tasks cleared!</p>
+        </div>
+        {% endfor %}
+        <a href="{% url 'todo' %}" class="btn btn-link text-secondary w-100 mt-3">Manage all tasks →</a>
+    </div>
+
+    <!-- Homework Pane -->
+    <div class="glass-pane">
+        <div class="pane-title"><i class="fas fa-book text-danger"></i> Due Homework</div>
+        {% for homework in homeworks %}
+        <div class="task-item">
+            <div class="task-meta">
+                <span class="task-title">{{ homework.title }}</span>
+                <span class="task-sub">{{ homework.subject }} • Due {{ homework.due|date:"M d" }}</span>
+            </div>
+            <a href="{% url 'update-homework' homework.id %}" class="btn btn-sm btn-outline-danger rounded-pill">Mark Done</a>
+        </div>
+        {% empty %}
+        <div class="text-center py-5 opacity-50">
+            <i class="fas fa-book-open fa-3x mb-3"></i>
+            <p>No pending homework!</p>
+        </div>
+        {% endfor %}
+        <a href="{% url 'homework' %}" class="btn btn-link text-secondary w-100 mt-3">Manage all homework →</a>
+    </div>
+  </div>
+</div>
 {% endblock content %}

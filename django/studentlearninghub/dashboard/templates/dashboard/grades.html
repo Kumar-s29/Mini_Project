@@ -1,0 +1,111 @@
+{% extends 'dashboard/base.html' %} 
+{% load crispy_forms_tags %}
+{% block content %}
+<style>
+  .grades-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 60px 20px;
+  }
+  .stat-card {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--glass-border);
+    border-radius: 24px;
+    padding: 30px;
+    text-align: center;
+    margin-bottom: 40px;
+  }
+  .stat-value {
+    font-size: 3.5rem;
+    font-weight: 800;
+    background: linear-gradient(to right, #10b981, #34d399);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .glass-card {
+    background: rgba(255, 255, 255, 0.02);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--glass-border);
+    border-radius: 24px;
+    padding: 40px;
+    margin-bottom: 40px;
+  }
+  .table {
+    color: white;
+  }
+  .table thead th {
+    border: none;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+  }
+  .grade-row {
+    border-bottom: 1px solid var(--glass-border);
+    transition: all 0.3s ease;
+  }
+  .grade-row:hover {
+    background: rgba(255, 255, 255, 0.02);
+  }
+</style>
+
+<div class="grades-container">
+  <div class="text-center mb-5">
+    <h1 class="display-4 fw-bold text-white">📈 Grade Tracker</h1>
+    <p class="text-secondary">Monitor your academic performance</p>
+  </div>
+
+  <div class="row">
+    <div class="col-md-4">
+      <div class="stat-card">
+        <div class="text-secondary mb-2">Overall Average</div>
+        <div class="stat-value">{{ average }}%</div>
+      </div>
+      
+      <div class="glass-card">
+        <h4 class="text-white mb-4">Add New Grade</h4>
+        <form method="POST">
+          {% csrf_token %}
+          {{ form|crispy }}
+          <button type="submit" class="btn btn-primary w-100 mt-3 py-3 rounded-3 fw-bold">Save Grade</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="col-md-8">
+      <div class="glass-card">
+        <h4 class="text-white mb-4">Grade History</h4>
+        <div class="table-responsive">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Subject</th>
+                <th>Score</th>
+                <th>Percentage</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for grade in grades %}
+              <tr class="grade-row">
+                <td class="py-3"><strong>{{ grade.subject }}</strong></td>
+                <td>{{ grade.marks_obtained }} / {{ grade.total_marks }}</td>
+                <td>
+                  <div class="progress" style="height: 10px; background: rgba(255,255,255,0.05);">
+                    <div class="progress-bar bg-success" style="width: {% widthratio grade.marks_obtained grade.total_marks 100 %}%"></div>
+                  </div>
+                </td>
+                <td>
+                  <a href="{% url 'delete-grade' grade.id %}" class="text-danger"><i class="fas fa-trash"></i></a>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

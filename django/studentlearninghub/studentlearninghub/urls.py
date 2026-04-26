@@ -32,7 +32,7 @@ urlpatterns = [
     ),
     path(
         "logout/",
-        auth_views.LogoutView.as_view(template_name="dashboard/logout.html"),
+        dash_views.custom_logout,
         name="logout",
     ),
     path("profile/", dash_views.profile, name="profile"),

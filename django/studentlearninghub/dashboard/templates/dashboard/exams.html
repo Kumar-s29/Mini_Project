@@ -1,0 +1,91 @@
+{% extends 'dashboard/base.html' %} 
+{% load crispy_forms_tags %}
+{% block content %}
+<style>
+  .exams-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 60px 20px;
+  }
+  .exam-card {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--glass-border);
+    border-radius: 24px;
+    padding: 30px;
+    margin-bottom: 25px;
+    transition: all 0.3s ease;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .exam-card:hover {
+    background: rgba(255, 255, 255, 0.05);
+    transform: translateY(-5px);
+  }
+  .importance-High { border-left: 5px solid #ef4444; }
+  .importance-Medium { border-left: 5px solid #f59e0b; }
+  .importance-Low { border-left: 5px solid #10b981; }
+  
+  .countdown {
+    text-align: right;
+  }
+  .days-left {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: white;
+  }
+</style>
+
+<div class="exams-container">
+  <div class="text-center mb-5">
+    <h1 class="display-4 fw-bold text-white">📅 Exam Schedule</h1>
+    <p class="text-secondary">Stay ahead of your deadlines</p>
+  </div>
+
+  <div class="row">
+    <div class="col-md-4">
+      <div class="glass-card p-4 rounded-4" style="background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border);">
+        <h4 class="text-white mb-4">Schedule Exam</h4>
+        <form method="POST">
+          {% csrf_token %}
+          {{ form|crispy }}
+          <button type="submit" class="btn btn-warning w-100 mt-3 py-3 rounded-3 fw-bold text-dark">Add Exam</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="col-md-8">
+      {% for exam in exams %}
+      <div class="exam-card importance-{{ exam.importance }}">
+        <div>
+          <span class="badge bg-secondary mb-2">{{ exam.subject }}</span>
+          <h3 class="text-white mb-1">{{ exam.title }}</h3>
+          <p class="text-secondary mb-0"><i class="far fa-calendar-alt me-2"></i>{{ exam.date|date:"F d, Y @ H:i" }}</p>
+        </div>
+        <div class="countdown">
+          <div class="days-left" id="exam-{{ exam.id }}">--</div>
+          <div class="text-secondary small">Time Remaining</div>
+          <a href="{% url 'delete-exam' exam.id %}" class="btn btn-sm btn-outline-danger mt-2"><i class="fas fa-trash"></i></a>
+        </div>
+      </div>
+      
+      <script>
+        (function() {
+          const examDate = new Date("{{ exam.date|date:'Y-m-d H:i:s' }}").getTime();
+          const timer = setInterval(function() {
+            const now = new Date().getTime();
+            const distance = examDate - now;
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            
+            document.getElementById("exam-{{ exam.id }}").innerHTML = distance < 0 ? "EXPIRED" : days + "d " + hours + "h";
+            if (distance < 0) clearInterval(timer);
+          }, 1000);
+        })();
+      </script>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}

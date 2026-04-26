@@ -1,0 +1,142 @@
+{% extends 'dashboard/base.html' %} 
+{% block content %}
+<style>
+  .focus-container {
+    max-width: 800px;
+    margin: 80px auto;
+    text-align: center;
+  }
+  .timer-circle {
+    width: 350px;
+    height: 350px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.02);
+    backdrop-filter: blur(20px);
+    border: 8px solid rgba(99, 102, 241, 0.2);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto 50px;
+    box-shadow: 0 0 100px rgba(99, 102, 241, 0.1);
+    transition: all 0.5s ease;
+  }
+  .timer-display {
+    font-size: 6rem;
+    font-weight: 800;
+    color: white;
+    font-family: 'Inter', sans-serif;
+  }
+  .timer-label {
+    font-size: 1.2rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 3px;
+  }
+  .timer-controls button {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    margin: 0 10px;
+    border: none;
+    transition: all 0.3s ease;
+  }
+  .sound-card {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    padding: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  .sound-card:hover, .sound-card.active {
+    background: rgba(99, 102, 241, 0.2);
+    border-color: #6366f1;
+  }
+</style>
+
+<div class="focus-container">
+  <div class="mb-5">
+    <h1 class="display-4 fw-bold text-white">⏱️ Deep Focus</h1>
+    <p class="text-secondary">Pomodoro timer for distraction-free studying</p>
+  </div>
+
+  <div class="timer-circle" id="timerCircle">
+    <div class="timer-label" id="modeLabel">Study Session</div>
+    <div class="timer-display" id="time">25:00</div>
+    <div class="d-flex mt-3">
+        <button class="btn btn-primary rounded-pill px-4 me-2" id="startBtn">START</button>
+        <button class="btn btn-outline-light rounded-pill px-4" id="resetBtn">RESET</button>
+    </div>
+  </div>
+
+  <div class="row g-4 mt-5">
+    <div class="col-md-4">
+        <div class="sound-card" onclick="toggleSound('rain')">
+            <i class="fas fa-cloud-showers-heavy fa-2x text-info mb-2"></i>
+            <div class="text-white">Rainy Day</div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="sound-card" onclick="toggleSound('cafe')">
+            <i class="fas fa-coffee fa-2x text-warning mb-2"></i>
+            <div class="text-white">Cozy Cafe</div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="sound-card" onclick="toggleSound('lofi')">
+            <i class="fas fa-music fa-2x text-primary mb-2"></i>
+            <div class="text-white">Lo-Fi Beats</div>
+        </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  let timeLeft = 25 * 60;
+  let timerId = null;
+  let isRunning = false;
+
+  const display = document.getElementById('time');
+  const startBtn = document.getElementById('startBtn');
+  const resetBtn = document.getElementById('resetBtn');
+
+  function updateDisplay() {
+    const mins = Math.floor(timeLeft / 60);
+    const secs = timeLeft % 60;
+    display.textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  }
+
+  startBtn.addEventListener('click', () => {
+    if (isRunning) {
+      clearInterval(timerId);
+      startBtn.textContent = 'START';
+      isRunning = false;
+    } else {
+      timerId = setInterval(() => {
+        timeLeft--;
+        updateDisplay();
+        if (timeLeft === 0) {
+          clearInterval(timerId);
+          alert('Time is up! Take a break.');
+        }
+      }, 1000);
+      startBtn.textContent = 'PAUSE';
+      isRunning = true;
+    }
+  });
+
+  resetBtn.addEventListener('click', () => {
+    clearInterval(timerId);
+    timeLeft = 25 * 60;
+    updateDisplay();
+    startBtn.textContent = 'START';
+    isRunning = false;
+  });
+
+  // Mock sound toggling
+  function toggleSound(type) {
+    alert(`Playing ${type} ambient sound... (Requires audio files)`);
+  }
+</script>
+{% endblock %}
